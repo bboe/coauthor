@@ -13,7 +13,7 @@ RE_CO_AUTHOR_LINE = re.compile('Co-authored-by: ([^<]+)<([^>]+)>',
                                re.MULTILINE)
 
 
-def add_co_authors(authors, aliases):
+def add_co_authors_by_alias(authors, aliases):
     authors = authors.copy()
     for alias in aliases:
         info = COAUTHORS[alias]
@@ -21,27 +21,29 @@ def add_co_authors(authors, aliases):
     return authors
 
 
-def existing_co_authors(message):
+def add_co_authors_to_message(message, authors):
+    co_author_lines = (['Co-authored-by: {} <{}>\n'.format(name, email)
+                        for email, name in sorted(authors.items(),
+                                                  key=lambda x: x[1].lower())])
+    return '{}\n{}'.format(message, ''.join(lines))
+
+
+def extract_co_authors_from_message(message):
     authors = {}
     for name, email in RE_CO_AUTHOR_LINE.findall(message):
         authors[email.strip()] = name.strip()
     return authors
 
 
-def update_message(message, authors):
+def strip_co_authors_from_message(message):
     lines = []
     for line in message.strip().split('\n'):
         if RE_CO_AUTHOR_LINE.match(line):
             continue
         lines.append(line + '\n')
+    return ''.join(lines).rstrip() + '\n'
 
-    if lines[-1] != '\n':
-        lines.append('\n')
 
-    lines.extend(['Co-authored-by: {} <{}>\n'.format(name, email)
-                  for email, name in sorted(authors.items(),
-                                            key=lambda x: x[1].lower())])
-    return ''.join(lines)
 
 
 def main():
