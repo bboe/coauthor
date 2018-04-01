@@ -1,4 +1,3 @@
-#!/usr/bin/env python
 from __future__ import print_function
 import os
 import re
@@ -6,6 +5,9 @@ import sys
 
 from git import Repo
 from git.exc import InvalidGitRepositoryError
+
+from .const import __version__
+
 
 COAUTHORS = {'bboe': {'email': 'bbzbryce@gmail.com', 'name': 'Bryce Boe'},
              'temp': {'email': 'z@a.com', 'name': 'A B C'}}
