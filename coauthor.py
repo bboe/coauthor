@@ -17,7 +17,13 @@ def main():
             'ERROR: The current directory is not a git respository.\n')
         return 1
 
-    print(repository)
+    old_commit = repository.head.commit
+    if not old_commit.parents:
+        sys.stderr.write('ERROR: Rewriting first commit is not supported.\n')
+        return 2
+    print(old_commit)
+    print(old_commit.parents)
+    #repository.head.reference.commit = co
 
 
 if __name__ == '__main__':
