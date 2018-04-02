@@ -6,7 +6,7 @@ import sys
 from git import Repo
 from git.exc import InvalidGitRepositoryError
 
-from .const import __version__
+from .const import __version__  # NOQA
 
 
 COAUTHORS = {'bboe': {'email': 'bbzbryce@gmail.com', 'name': 'Bryce Boe'},
@@ -24,6 +24,8 @@ def add_co_authors_by_alias(authors, aliases):
 
 
 def add_co_authors_to_message(message, authors):
+    if not authors:
+        return message
     co_author_lines = (['Co-authored-by: {} <{}>\n'.format(name, email)
                         for email, name in sorted(authors.items(),
                                                   key=lambda x: x[1].lower())])
@@ -51,8 +53,6 @@ def strip_co_authors_from_message(message):
     return ''.join(lines).rstrip() + '\n'
 
 
-
-
 def main():
     try:
         repository = Repo(os.getcwd())
@@ -69,11 +69,10 @@ def main():
         sys.stderr.write('ERROR: Rewriting merge commit is not supported.\n')
         return 3
 
-
     existing_authors = extract_co_authors_from_message(old_commit.message)
     authors = add_co_authors_by_alias(existing_authors, ['bboe'])
     base_message = strip_co_authors_from_message(old_commit.message)
     new_message = add_co_authors_to_message(base_message, authors)
     print(new_message)
 
-    #amend_head(repository, new_message))
+    # amend_head(repository, new_message))
