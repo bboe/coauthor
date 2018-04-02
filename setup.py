@@ -36,6 +36,8 @@ setup(name=PACKAGE_NAME,
       description=('A tool that facilitates adding '
                    '`Co-authored-by: name <email>` lines in a user friendly '
                    'way to git commits.'),
+      entry_points={'console_scripts': ['{0} = {0}:main'
+                                        .format(PACKAGE_NAME)]},
       install_requires=['gitpython >=2.1.9, <3'],
       keywords='git github coauthor',
       license='Simplified BSD License',

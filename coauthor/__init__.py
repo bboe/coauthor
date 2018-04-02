@@ -27,7 +27,12 @@ def add_co_authors_to_message(message, authors):
     co_author_lines = (['Co-authored-by: {} <{}>\n'.format(name, email)
                         for email, name in sorted(authors.items(),
                                                   key=lambda x: x[1].lower())])
-    return '{}\n{}'.format(message, ''.join(lines))
+    return '{}\n{}'.format(message, ''.join(co_author_lines))
+
+
+def amend_head(repository, message):
+    repository.head.reference.commit = repository.head.commit.parents[0]
+    repository.index.commit(message)
 
 
 def extract_co_authors_from_message(message):
@@ -64,12 +69,11 @@ def main():
         sys.stderr.write('ERROR: Rewriting merge commit is not supported.\n')
         return 3
 
-    authors = add_co_authors(existing_co_authors(old_commit.message), ['bboe'])
-    new_message = update_message(old_commit.message, authors)
 
-    repository.head.reference.commit = old_commit.parents[0]
-    repository.index.commit(new_message)
+    existing_authors = extract_co_authors_from_message(old_commit.message)
+    authors = add_co_authors_by_alias(existing_authors, ['bboe'])
+    base_message = strip_co_authors_from_message(old_commit.message)
+    new_message = add_co_authors_to_message(base_message, authors)
+    print(new_message)
 
-
-if __name__ == '__main__':
-    sys.exit(main())
+    #amend_head(repository, new_message))
